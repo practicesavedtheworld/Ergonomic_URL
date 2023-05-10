@@ -1,28 +1,28 @@
-/** {*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*    box-sizing: border-box;*/
-/*}*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-/*h1 {*/
-/*    padding-top: 100px;*/
-/*    margin-top: 100px;*/
-/*    font-size: 140px;*/
-/*    text-align: center;*/
-/*    position: center;*/
-/*    text-shadow: 1px 1px 3px #ffffff;*/
-/*}*/
+h1 {
+    padding-top: 100px;
+    margin-top: 100px;
+    font-size: 140px;
+    text-align: center;
+    position: center;
+    text-shadow: 1px 1px 3px #ffffff;
+}
 
-/*p {*/
-/*    font-size: 40px;*/
-/*    text-shadow: 1px 1px 1px #666;*/
-/*}*/
+p {
+    font-size: 40px;
+    text-shadow: 1px 1px 1px #666;
+}
 
-/*div {*/
-/*    padding: 20px;*/
-/*    margin: auto;*/
-/*    text-align: center;*/
-/*}*/
+div {
+    padding: 20px;
+    margin: auto;
+    text-align: center;
+}
 
 #result-box, #SB, #url {
     height: 38px;
