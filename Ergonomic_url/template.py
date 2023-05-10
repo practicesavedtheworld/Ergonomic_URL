@@ -3,7 +3,7 @@ import jinja2
 import aiohttp_jinja2
 import pathlib
 
-PROJECT_ROOT = pathlib.Path(__file__).parent.parent / 'templates'
+PROJECT_ROOT = pathlib.Path(__file__).parent / 'templates'
 
 
 def setup_jinja(app: aiohttp.web.Application):
