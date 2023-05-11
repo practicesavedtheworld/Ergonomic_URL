@@ -1,5 +1,5 @@
-import aiohttp.web
 import aiohttp_jinja2
+import aiohttp.web
 from aiohttp.web_request import Request
 
 from utils import push_to_db, get_from_db
