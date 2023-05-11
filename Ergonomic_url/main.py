@@ -1,8 +1,10 @@
+import asyncio
 import aiohttp.web
 
 from settings import load_config
 from template import setup_jinja
 from routes import setup_routes
+from init_db import connect_to_db
 
 
 def start_app() -> None:
@@ -11,8 +13,9 @@ def start_app() -> None:
     setup_jinja(app=app)
     setup_routes(app=app)
 
-
-    aiohttp.web.run_app(app)
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(connect_to_db(app))
+    aiohttp.web.run_app(app, loop=loop)
 
 
 if __name__ == '__main__':
