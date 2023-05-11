@@ -1,19 +1,19 @@
-import aiohttp.web
 import string
 
+import aiohttp.web
 import asyncpg
 
 
 def get_short_link(link: str, app: aiohttp.web.Application) -> str:
     def get_unique_short_link_piece(link) -> str:
         chars = (string.digits + string.ascii_letters).replace('l', '').replace('I', '')
-        len_s, len_chars, right_piece, rem = len(link), len(chars), link[len(link) // 2:], -len(link) % len(chars)
+        len_url, len_chars, right_piece, rem = len(link), len(chars), link[len(link) // 2:], -len(link) % len(chars)
         symbols = [chars[rem]]
 
         while len_chars:
-            _, len_chars = divmod(len_s, len_chars)
+            _, len_chars = divmod(len_url, len_chars)
             symbols.append(chars[len_chars])
-        symbols.append(right_piece[0] + right_piece[-1])
+        symbols.append((right_piece[0] + right_piece[-1]).replace('/', '.'))
         symbols.reverse()
         return ''.join(symbols)
 
