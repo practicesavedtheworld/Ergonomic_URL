@@ -1,3 +1,4 @@
+import logging
 import string
 
 import aiohttp.web
@@ -5,7 +6,7 @@ import asyncpg
 
 
 def get_short_link(link: str, app: aiohttp.web.Application) -> str:
-    def get_unique_short_link_piece(link) -> str:
+    def get_unique_short_link_piece(link: str) -> str:
         chars = (string.digits + string.ascii_letters).replace('l', '').replace('I', '')
         len_url, len_chars, right_piece, rem = len(link), len(chars), link[len(link) // 2:], -len(link) % len(chars)
         symbols = [chars[rem]]
@@ -27,26 +28,40 @@ def get_short_link(link: str, app: aiohttp.web.Application) -> str:
 async def push_to_db(app: aiohttp.web.Application, original_url: str):
     db: asyncpg.Pool = app['db']
     async with db.acquire() as connection:
-        async with connection.transaction():
-            query_from = """
-                SELECT original_link FROM links where original_link = $1;
-            """
-            result_from = await connection.fetch(query_from, original_url)
-            short_link = get_short_link(original_url, app)
-            if len(result_from) == 0:
-                query_into = """
-                    INSERT INTO links (original_link, short_link) VALUES ($1, $2);
+        try:
+            async with connection.transaction():
+                query_from = """
+                    SELECT original_link FROM links where original_link = $1;
                 """
-                await connection.fetch(query_into, original_url, short_link.rsplit('/', maxsplit=1)[-1])
-            return short_link
+                result_from = await connection.fetch(query_from, original_url)
+                short_link = get_short_link(original_url, app)
+                if len(result_from) == 0:
+                    query_into = """
+                        INSERT INTO links (original_link, short_link) VALUES ($1, $2);
+                    """
+                    await connection.fetch(query_into, original_url, short_link.rsplit('/', maxsplit=1)[-1])
+                return short_link
+        except asyncpg.InvalidTransactionStateError as t_err:
+            logging.error('Something blocks transaction', exc_info=t_err)
+            raise
+        except asyncpg.PostgresError as err:
+            logging.error(f'Failed transaction {query_from} or {query_into}', exc_info=err)
+            raise
 
 
 async def get_from_db(app: aiohttp.web.Application, url: str):
     db: asyncpg.Pool = app['db']
     async with db.acquire() as connection:
-        async with connection.transaction():
-            original_link_query = """
-                SELECT original_link FROM links WHERE short_link = $1;
-            """
-            link = await connection.fetch(original_link_query, url)
-            return link
+        try:
+            async with connection.transaction():
+                original_link_query = """
+                    SELECT original_link FROM links WHERE short_link = $1;
+                """
+                link = await connection.fetch(original_link_query, url)
+                return link
+        except asyncpg.InvalidTransactionStateError as t_err:
+            logging.error('Something blocks transaction', exc_info=t_err)
+            raise
+        except asyncpg.PostgresError as err:
+            logging.error(f'Failed transaction {original_link_query}', exc_info=err)
+            raise
