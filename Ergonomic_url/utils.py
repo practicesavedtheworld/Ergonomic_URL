@@ -3,6 +3,7 @@ import string
 
 import aiohttp.web
 import asyncpg
+from asyncpg import Record
 
 
 def get_short_link(link: str, app: aiohttp.web.Application) -> str:
@@ -25,7 +26,7 @@ def get_short_link(link: str, app: aiohttp.web.Application) -> str:
     return new_link
 
 
-async def push_to_db(app: aiohttp.web.Application, original_url: str):
+async def push_to_db(app: aiohttp.web.Application, original_url: str) -> str:
     db: asyncpg.Pool = app['db']
     async with db.acquire() as connection:
         try:
@@ -49,7 +50,7 @@ async def push_to_db(app: aiohttp.web.Application, original_url: str):
             raise
 
 
-async def get_from_db(app: aiohttp.web.Application, url: str):
+async def get_from_db(app: aiohttp.web.Application, url: str) -> list[Record]:
     db: asyncpg.Pool = app['db']
     async with db.acquire() as connection:
         try:
@@ -57,7 +58,7 @@ async def get_from_db(app: aiohttp.web.Application, url: str):
                 original_link_query = """
                     SELECT original_link FROM links WHERE short_link = $1;
                 """
-                link = await connection.fetch(original_link_query, url)
+                link: list[Record] = await connection.fetch(original_link_query, url)
                 return link
         except asyncpg.InvalidTransactionStateError as t_err:
             logging.error('Something blocks transaction', exc_info=t_err)
