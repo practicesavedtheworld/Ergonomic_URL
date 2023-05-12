@@ -3,6 +3,7 @@ import pathlib
 
 from views import index, ergonomic, redirect
 
+
 def setup_routes(app: aiohttp.web.Application):
     router = app.router
     router.add_get('/', index)
