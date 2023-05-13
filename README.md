@@ -10,6 +10,7 @@ simple shortify url app
 > CREATE DATABASE shortlinkdb;</code></pre>
 3. Start
 <pre><code>$ git clone https://github.com/practicesavedtheworld/Ergonomic_URL
+$ pip install -r requirements.txt
 $ cd Ergonomic_url
 $ python3 main.py
 </code></pre>
