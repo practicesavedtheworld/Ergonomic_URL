@@ -7,6 +7,7 @@ from routes import setup_routes
 from init_db import connect_to_db
 from middlewares import link_middleware
 
+
 def start_app() -> None:
     app = aiohttp.web.Application()
     app['config'] = load_config()
