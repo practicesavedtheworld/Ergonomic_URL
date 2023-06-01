@@ -7,7 +7,10 @@ from asyncpg import Record
 
 
 def get_short_link(link: str, app: aiohttp.web.Application) -> str:
+    """Generates unique short link for every 'long link' in a form host:port/symbols.
+    Every link has only one unique short link"""
     def get_unique_short_link_piece(link: str) -> str:
+        """The following algorithm return unique sequence of symbols"""
         chars = (string.digits + string.ascii_letters).replace('l', '').replace('I', '')
         len_url, len_chars, right_piece, rem = len(link), len(chars), link[len(link) // 2:], -len(link) % len(chars)
         symbols = [chars[rem]]
@@ -27,6 +30,7 @@ def get_short_link(link: str, app: aiohttp.web.Application) -> str:
 
 
 async def push_to_db(app: aiohttp.web.Application, original_url: str) -> str:
+    """Pushing value to DB if it's doesnt there using transaction"""
     db: asyncpg.Pool = app['db']
     async with db.acquire() as connection:
         try:
@@ -51,6 +55,7 @@ async def push_to_db(app: aiohttp.web.Application, original_url: str) -> str:
 
 
 async def get_from_db(app: aiohttp.web.Application, url: str) -> list[Record]:
+    """Get link from db using transaction"""
     db: asyncpg.Pool = app['db']
     async with db.acquire() as connection:
         try:
