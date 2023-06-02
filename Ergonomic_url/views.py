@@ -22,6 +22,7 @@ async def ergonomic(request: Request) -> Response:
 
 
 async def redirect(request: Request) -> None:
+    """Get original url from database and do redirection. Otherwise link is get old"""
     url = request.match_info['short_url']
     original_link = await get_from_db(app=request.app, url=url)
     if len(original_link) == 0:
