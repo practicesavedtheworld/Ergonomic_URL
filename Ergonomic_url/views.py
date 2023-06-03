@@ -14,6 +14,7 @@ async def index(request: Request) -> dict:
 
 
 async def ergonomic(request: Request) -> Response:
+    """Put into result field short link"""
     data = await request.json()
     original_link = data['url']
     short_link = await push_to_db(request.app, original_link)
